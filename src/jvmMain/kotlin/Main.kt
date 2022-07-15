@@ -76,11 +76,8 @@ fun MessageEncryptionView(keysState: MutableState<List<KeyInfo>>) {
             }
 
             RowWithClearButton(encryptedTextState) {
-                Button(
-                    modifier = paddingModifier,
-                    onClick = { decryptedText = GpgLauncher.decrypt(encryptedText).stringValue }
-                ) {
-                    Text("Decrypt")
+                SimpleButton("Decrypt") {
+                    decryptedText = GpgLauncher.decrypt(encryptedText).stringValue
                 }
             }
 
@@ -97,17 +94,11 @@ fun MessageEncryptionView(keysState: MutableState<List<KeyInfo>>) {
             }
             RowWithClearButton(decryptedTextState) {
                 Row {
-                    Button(
-                        modifier = paddingModifier,
-                        onClick = { encryptedText = GpgLauncher.encrypt(sender, recipient, decryptedText).stringValue }
-                    ) {
-                        Text("Encrypt")
+                    SimpleButton("Encrypt") {
+                        encryptedText = GpgLauncher.encrypt(sender, recipient, decryptedText).stringValue
                     }
-                    Button(
-                        modifier = paddingModifier,
-                        onClick = { encryptedText = GpgLauncher.sign(decryptedText).stringValue }
-                    ) {
-                        Text("Sign")
+                    SimpleButton("Sign") {
+                        encryptedText = GpgLauncher.sign(decryptedText).stringValue
                     }
                 }
             }
@@ -129,12 +120,14 @@ fun RowWithClearButton(stateToClear: MutableState<String>, content: @Composable 
     ) {
         content()
 
-        Button(
-            modifier = paddingModifier,
-            onClick = { stateToClear.value = "" }
-        ) {
-            Text("Clear")
-        }
+        SimpleButton("Clear") { stateToClear.value = "" }
+    }
+}
+
+@Composable
+fun SimpleButton(text: String, onClick: () -> Unit) {
+    Button(modifier = paddingModifier, onClick = onClick) {
+        Text(text)
     }
 }
 
