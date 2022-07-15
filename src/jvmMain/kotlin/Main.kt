@@ -59,8 +59,12 @@ fun KeyManagementView(keysState: MutableState<List<KeyInfo>>) {
 @Composable
 fun MessageEncryptionView(keysState: MutableState<List<KeyInfo>>) {
     val keyInfos by keysState
-    var encryptedText by remember { mutableStateOf("") }
-    var decryptedText by remember { mutableStateOf("") }
+
+    val encryptedTextState = remember { mutableStateOf("") }
+    var encryptedText by encryptedTextState
+
+    val decryptedTextState = remember { mutableStateOf("") }
+    var decryptedText by decryptedTextState
 
     var sender by remember { mutableStateOf(keyInfos[0]) }
     var recipient by remember { mutableStateOf(keyInfos[0]) }
@@ -71,11 +75,13 @@ fun MessageEncryptionView(keysState: MutableState<List<KeyInfo>>) {
                 recipient = it
             }
 
-            Button(
-                modifier = paddingModifier,
-                onClick = { decryptedText = GpgLauncher.decrypt(encryptedText).stringValue }
-            ) {
-                Text("Decrypt")
+            RowWithClearButton(encryptedTextState) {
+                Button(
+                    modifier = paddingModifier,
+                    onClick = { decryptedText = GpgLauncher.decrypt(encryptedText).stringValue }
+                ) {
+                    Text("Decrypt")
+                }
             }
 
             MyTextField(
@@ -89,19 +95,20 @@ fun MessageEncryptionView(keysState: MutableState<List<KeyInfo>>) {
             MyMenu(keyInfos, sender, "Sender") {
                 sender = it
             }
-
-            Row(horizontalArrangement = Arrangement.SpaceBetween) {
-                Button(
-                    modifier = paddingModifier,
-                    onClick = { encryptedText = GpgLauncher.encrypt(sender, recipient, decryptedText).stringValue }
-                ) {
-                    Text("Encrypt")
-                }
-                Button(
-                    modifier = paddingModifier,
-                    onClick = { encryptedText = GpgLauncher.sign(decryptedText).stringValue }
-                ) {
-                    Text("Sign")
+            RowWithClearButton(decryptedTextState) {
+                Row {
+                    Button(
+                        modifier = paddingModifier,
+                        onClick = { encryptedText = GpgLauncher.encrypt(sender, recipient, decryptedText).stringValue }
+                    ) {
+                        Text("Encrypt")
+                    }
+                    Button(
+                        modifier = paddingModifier,
+                        onClick = { encryptedText = GpgLauncher.sign(decryptedText).stringValue }
+                    ) {
+                        Text("Sign")
+                    }
                 }
             }
 
@@ -110,6 +117,23 @@ fun MessageEncryptionView(keysState: MutableState<List<KeyInfo>>) {
                 onValueChange = { decryptedText = it },
                 label = "decrypted text"
             )
+        }
+    }
+}
+
+@Composable
+fun RowWithClearButton(stateToClear: MutableState<String>, content: @Composable RowScope.() -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        content()
+
+        Button(
+            modifier = paddingModifier,
+            onClick = { stateToClear.value = "" }
+        ) {
+            Text("Clear")
         }
     }
 }
