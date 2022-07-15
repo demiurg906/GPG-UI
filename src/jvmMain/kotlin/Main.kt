@@ -11,6 +11,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -21,7 +24,7 @@ val paddingModifier: Modifier
 @Composable
 @Preview
 fun App() {
-    val keysState = remember { mutableStateOf(GpgLauncher.getKeys().unwrap()) }
+    val keysState = remember { mutableStateOf(loadKeys()) }
 
     MaterialTheme {
         var tabIndex by remember { mutableStateOf(0) }
@@ -48,10 +51,33 @@ fun App() {
     }
 }
 
+private fun loadKeys(): List<KeyInfo> {
+    return GpgLauncher.getKeys().getOrNull() ?: emptyList()
+}
+
 
 @Composable
 fun KeyManagementView(keysState: MutableState<List<KeyInfo>>) {
     var keys by keysState
+    Column {
+        Row {
+            SimpleButton("Reload keys") { keys = loadKeys() }
+            SimpleButton("Add new key") {
+                // TODO
+            }
+        }
+        Column(paddingModifier) {
+            for (key in keys) {
+                var isExpanded by remember { mutableStateOf(false) }
+                Column(paddingModifier.clickable { isExpanded = !isExpanded }) {
+                    Text(key.name, fontWeight = FontWeight.Bold)
+                    if (isExpanded) {
+                        Text(key.toString(), fontFamily = FontFamily.Monospace)
+                    }
+                }
+            }
+        }
+    }
 
 
 }

@@ -34,6 +34,11 @@ val Result<String>.stringValue: String
         is Result.Error.FromException -> "Exception: ${e.message}"
     }
 
+fun <T : Any> Result<T>.getOrNull(): T? = when (this) {
+    is Result.Success -> value
+    else -> null
+}
+
 data class KeyInfo(
     val pubInfo: String,
     val pubHash: String,
