@@ -62,8 +62,36 @@ fun KeyManagementView(keysState: MutableState<List<KeyInfo>>) {
     Column {
         Row {
             SimpleButton("Reload keys") { keys = loadKeys() }
-            SimpleButton("Add new key") {
-                // TODO
+            Box {
+                var newKeyExpanded by remember { mutableStateOf(false) }
+                var newKeyText by remember { mutableStateOf("") }
+                if (!newKeyExpanded) {
+                    SimpleButton("Add new key") {
+                        newKeyExpanded = true
+                    }
+                } else {
+                    Column {
+                        Row {
+                            SimpleButton("Add") {
+                                when (val result = GpgLauncher.addNewKey(newKeyText)) {
+                                    is Result.Success -> {
+                                        newKeyExpanded = false
+                                        newKeyText = ""
+                                        keysState.value = loadKeys()
+                                    }
+                                    is Result.Error -> {
+                                        newKeyText = result.stringValue
+                                    }
+                                }
+                            }
+                            SimpleButton("Cancel") {
+                                newKeyExpanded = false
+                                newKeyText = ""
+                            }
+                        }
+                        MyTextField(newKeyText, "Public Key") { newKeyText = it }
+                    }
+                }
             }
         }
         Column(paddingModifier) {

@@ -6,6 +6,13 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 object GpgLauncher {
+    fun addNewKey(key: String): Result<String> {
+        return withTempFile("publicKey") { file ->
+            file.writeText(key)
+            runGpg("--import", file.absolutePath)
+        }
+    }
+
     fun decrypt(input: String): Result<String> {
         return withTempFile("encrypted") { file ->
             file.writeText(input)
