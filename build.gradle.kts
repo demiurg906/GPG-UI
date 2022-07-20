@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "org.demiurg"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     google()
@@ -38,7 +38,7 @@ compose.desktop {
         mainClass = "MainKt"
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "PGP_UI"
+            packageName = "gpgui"
             packageVersion = "1.0.0"
         }
     }

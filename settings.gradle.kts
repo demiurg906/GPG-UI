@@ -13,5 +13,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = "PGP_UI"
+rootProject.name = "GPG_UI"
 
