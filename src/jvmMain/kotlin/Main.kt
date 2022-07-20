@@ -245,7 +245,11 @@ fun RowScope.MyColumn(content: @Composable ColumnScope.() -> Unit) {
 }
 
 fun main() = application {
-    Window(onCloseRequest = ::exitApplication) {
+    Window(
+        title = "GPG UI",
+        state = WindowState(size = DpSize(1300.dp, 800.dp)),
+        onCloseRequest = ::exitApplication
+    ) {
         App()
     }
 }
