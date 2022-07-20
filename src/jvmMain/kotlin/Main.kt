@@ -2,20 +2,18 @@
 @file:Suppress("FunctionName")
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 
 val paddingModifier: Modifier
@@ -153,6 +151,12 @@ fun MessageEncryptionView(keysState: MutableState<List<KeyInfo>>) {
                     }
                     SimpleButton("Sign") {
                         encryptedText = GpgLauncher.sign(decryptedText).stringValue
+                    }
+                    SimpleButton("Sign and encrypt") {
+                        encryptedText = when (val signResult = GpgLauncher.sign(decryptedText)) {
+                            is Result.Success -> GpgLauncher.encrypt(sender, recipient, signResult.value).stringValue
+                            is Result.Error -> signResult.stringValue
+                        }
                     }
                 }
             }
