@@ -19,6 +19,8 @@ import androidx.compose.ui.window.application
 val paddingModifier: Modifier
     get() = Modifier.padding(5.dp)
 
+const val SIGNED_MESSAGE_HEADER = "-----BEGIN PGP SIGNED MESSAGE-----"
+
 @Composable
 @Preview
 fun App() {
@@ -128,8 +130,16 @@ fun MessageEncryptionView(keysState: MutableState<List<KeyInfo>>) {
             }
 
             RowWithClearButton(encryptedTextState) {
-                SimpleButton("Decrypt") {
-                    decryptedText = GpgLauncher.decrypt(encryptedText).stringValue
+                Row {
+                    SimpleButton("Decrypt") {
+                        decryptedText = GpgLauncher.decrypt(encryptedText).stringValue
+                    }
+                    SimpleButton("Decrypt and check sign") {
+                        decryptedText = GpgLauncher.decrypt(encryptedText).stringValue
+                        if (decryptedText.startsWith(SIGNED_MESSAGE_HEADER)) {
+                            decryptedText = GpgLauncher.decrypt(decryptedText).stringValue
+                        }
+                    }
                 }
             }
 
